@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import axios from '@/lib/axios'
+import laravelAxios from '@/lib/axios'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
@@ -8,7 +8,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     const params = useParams()
 
     const { data: user, error, mutate } = useSWR('/api/user', () =>
-        axios
+        laravelAxios
             .get('/api/user')
             .then(res => res.data)
             .catch(error => {
@@ -18,14 +18,14 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             }),
     )
 
-    const csrf = () => axios.get('/sanctum/csrf-cookie')
+    const csrf = () => laravelAxios.get('/sanctum/csrf-cookie')
 
     const register = async ({ setErrors, ...props }) => {
         await csrf()
 
         setErrors([])
 
-        axios
+        laravelAxios
             .post('/register', props)
             .then(() => mutate())
             .catch(error => {
@@ -41,7 +41,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         setErrors([])
         setStatus(null)
 
-        axios
+        laravelAxios
             .post('/login', props)
             .then(() => mutate())
             .catch(error => {
@@ -57,7 +57,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         setErrors([])
         setStatus(null)
 
-        axios
+        laravelAxios
             .post('/forgot-password', { email })
             .then(response => setStatus(response.data.status))
             .catch(error => {
@@ -73,7 +73,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         setErrors([])
         setStatus(null)
 
-        axios
+        laravelAxios
             .post('/reset-password', { token: params.token, ...props })
             .then(response =>
                 router.push('/login?reset=' + btoa(response.data.status)),
@@ -86,14 +86,14 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
 
     const resendEmailVerification = ({ setStatus }) => {
-        axios
+        laravelAxios
             .post('/email/verification-notification')
             .then(response => setStatus(response.data.status))
     }
 
     const logout = async () => {
         if (!error) {
-            await axios.post('/logout').then(() => mutate())
+            await laravelAxios.post('/logout').then(() => mutate())
         }
 
         window.location.pathname = '/login'

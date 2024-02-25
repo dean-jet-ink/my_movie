@@ -1,21 +1,21 @@
 'use client'
 
+import AuthSessionStatus from '@/app/(auth)/AuthSessionStatus'
 import Button from '@/components/Button'
 import Input from '@/components/Input'
 import InputError from '@/components/InputError'
 import Label from '@/components/Label'
-import Link from 'next/link'
 import { useAuth } from '@/hooks/auth'
-import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import AuthSessionStatus from '@/app/(auth)/AuthSessionStatus'
+import { useEffect, useState } from 'react'
 
 const Login = () => {
     const router = useRouter()
 
     const { login } = useAuth({
         middleware: 'guest',
-        redirectIfAuthenticated: '/dashboard',
+        redirectIfAuthenticated: '/home',
     })
 
     const [email, setEmail] = useState('')
@@ -79,10 +79,7 @@ const Login = () => {
                         autoComplete="current-password"
                     />
 
-                    <InputError
-                        messages={errors.password}
-                        className="mt-2"
-                    />
+                    <InputError messages={errors.password} className="mt-2" />
                 </div>
 
                 {/* Remember Me */}
